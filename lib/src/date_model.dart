@@ -54,10 +54,15 @@ class CommonPickerModel extends BasePickerModel {
   late int _currentLeftIndex;
   late int _currentMiddleIndex;
   late int _currentRightIndex;
+  bool showRight, showMiddle, showLeft;
 
   late LocaleType locale;
 
-  CommonPickerModel({LocaleType? locale})
+  CommonPickerModel(
+      {LocaleType? locale,
+      this.showLeft = true,
+      this.showMiddle = true,
+      this.showRight = true})
       : this.locale = locale ?? LocaleType.en;
 
   @override
@@ -117,7 +122,17 @@ class CommonPickerModel extends BasePickerModel {
 
   @override
   List<int> layoutProportions() {
-    return [1, 1, 1];
+    final layoutList = List<int>.filled(3, 1);
+    if (!showRight) {
+      layoutList[2] = 0;
+    }
+    if (!showMiddle) {
+      layoutList[1] = 0;
+    }
+    if (!showLeft) {
+      layoutList[0] = 0;
+    }
+    return layoutList;
   }
 
   @override
@@ -131,12 +146,15 @@ class DatePickerModel extends CommonPickerModel {
   late DateTime maxTime;
   late DateTime minTime;
 
-  DatePickerModel(
-      {DateTime? currentTime,
-      DateTime? maxTime,
-      DateTime? minTime,
-      LocaleType? locale})
-      : super(locale: locale) {
+  DatePickerModel({
+    DateTime? currentTime,
+    DateTime? maxTime,
+    DateTime? minTime,
+    LocaleType? locale,
+    bool? showLeft,
+    bool? showMiddle,
+    bool? showRight,
+  }) : super(locale: locale,showLeft: showLeft??true,showMiddle: showMiddle??true,showRight: showRight??true) {
     this.maxTime = maxTime ?? DateTime(2049, 12, 31);
     this.minTime = minTime ?? DateTime(1970, 1, 1);
 
@@ -163,10 +181,9 @@ class DatePickerModel extends CommonPickerModel {
   void _fillLeftLists() {
     this.leftList = List.generate(maxTime.year - minTime.year + 1, (int index) {
       // print('LEFT LIST... ${minTime.year + index}${_localeYear()}');
-      if (locale == LocaleType.ar )
-      {
+      if (locale == LocaleType.ar) {
         return '${convertNumberToArbic(minTime.year + index)}${_localeDay()}';
-      }else{
+      } else {
         return '${minTime.year + index}${_localeYear()}';
       }
     });
@@ -208,25 +225,33 @@ class DatePickerModel extends CommonPickerModel {
     int maxDay = _maxDayOfCurrentMonth();
     int minDay = _minDayOfCurrentMonth();
     this.rightList = List.generate(maxDay - minDay + 1, (int index) {
-      if (locale == LocaleType.ar){
+      if (locale == LocaleType.ar) {
         return '${convertNumberToArbic(minDay + index)}${_localeDay()}';
-      }else{
+      } else {
         return '${minDay + index}${_localeDay()}';
       }
-
     });
   }
 
-  String convertNumberToArbic(int number)
-  {
+  String convertNumberToArbic(int number) {
     var numberString = '$number';
     const englishNumber = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-    var arbicNumber = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩',];
-    for(int i = 0; i < englishNumber.length; i++) {
+    var arbicNumber = [
+      '٠',
+      '١',
+      '٢',
+      '٣',
+      '٤',
+      '٥',
+      '٦',
+      '٧',
+      '٨',
+      '٩',
+    ];
+    for (int i = 0; i < englishNumber.length; i++) {
       numberString = numberString.replaceAll(englishNumber[i], arbicNumber[i]);
     }
     return numberString;
-
   }
 
   @override
@@ -717,5 +742,4 @@ class DateTimePickerModel extends CommonPickerModel {
   String rightDivider() {
     return ':';
   }
-
 }

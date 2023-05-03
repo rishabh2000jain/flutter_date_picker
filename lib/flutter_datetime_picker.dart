@@ -31,6 +31,7 @@ class DatePicker {
     locale: LocaleType.en,
     DateTime? currentTime,
     DatePickerTheme? theme,
+        List<bool> visibleColumns = const [true,true,true]
   }) async {
     return await Navigator.push(
       context,
@@ -48,6 +49,9 @@ class DatePicker {
           maxTime: maxTime,
           minTime: minTime,
           locale: locale,
+          showRight: visibleColumns[2],
+          showMiddle: visibleColumns[1],
+          showLeft: visibleColumns[0]
         ),
       ),
     );
